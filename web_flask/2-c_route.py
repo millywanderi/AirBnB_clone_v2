@@ -4,7 +4,7 @@ Script that starts a Flask web application
 Listens to 0.0.0.0, port 5000
 Route '/' displays “C ” followed by the value of the text variable
 """
-from flask import Flask
+from flask import Flask, escape
 
 app = Flask(__name__)
 
@@ -21,11 +21,11 @@ def hbnb():
     """returns HBNB"""
     return 'HBNB'
 
-@app.route('/c/<string:text>', strict_slashes=False)
+@app.route('/c/<text>', strict_slashes=False)
 def c_text(text):
     """returns c followed by text"""
-    text = text.replace("_", " ")
-    return "C %s" % text
+    text = escape(text).replace('_', ' ')
+    return "C {}".format(text)
 
 
 if __name__ == '__main__':
