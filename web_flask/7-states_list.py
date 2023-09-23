@@ -12,9 +12,10 @@ def state_list():
     """Displays an HTML page with a list of all State objects in DBStorage
     States are sorted by name.
     """
-    states = storage.all("State")
-    sorted_states = sorted(states, key=lambda state: state.name
-    return render_template("7-states_list.html", states=sorted_states)
+    path = '7-states_list.html'
+    states = storage.all(State)
+    sorted_states = sorted(states.values(), key=lambda state: state.name)
+    return render_template(path, sorted_states=sorted_states)
 
 
 @app.teardown_appcontext
