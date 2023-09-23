@@ -2,6 +2,7 @@
 """Starts flask app listening to 0.0.0.0: port:5000"""
 from models import storage
 from flask import Flask, render_template
+from models.state import State
 
 app = Flask(__name__)
 
@@ -12,7 +13,8 @@ def state_list():
     States are sorted by name.
     """
     states = storage.all("State")
-    return render_template("7-states_list.html", states=states)
+    sorted_states = sorted(states, key=lambda state: state.name
+    return render_template("7-states_list.html", states=sorted_states)
 
 
 @app.teardown_appcontext
