@@ -5,6 +5,7 @@ and related cities
 """
 from models import storage
 from flask import Flask, render_template
+from models.state import State
 
 app = Flask(__name__)
 
@@ -14,8 +15,9 @@ def cities_by_states():
     """Displays an HTML page with a list of all State objects in DBStorage
     States/Cities are sorted by name.
     """
-    states = storage.all("State")
-    return render_template("8-cities_by_states.html", states=states)
+    states = storage.all(State)
+    path = '8-cities_by_states.html'
+    return render_template(path, states=states)
 
 
 @app.teardown_appcontext
