@@ -12,10 +12,9 @@ app = Flask(__name__)
 @app.route('/hbnb_filters', strict_slashes=False)
 def hbnb_filters():
     """Render template with states"""
-    path = '10-hbnb_filters.html'
     states = storage.all(State)
     amenities = storage.all(Amenity)
-    return render_template(path, states=states, amenities=amenities)
+    return render_template('10-hbnb_filters.html', states=states, amenities=amenities)
 
 
 @app.teardown_appcontext
