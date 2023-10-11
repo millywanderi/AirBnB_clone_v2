@@ -3,15 +3,19 @@
 an archive to your web servers, using the function do_deploy
 """
 
-from fabric.api import *
+from fabric.api import env,put, run, runs_once, local
+from datetime import datetime
 import os
 
 
-env.hosts = ['ubuntu@100.25.170.22', 'ubuntu@35.174.185.161']
+env.hosts = ['100.25.170.22', '35.174.185.161']
 
 
 def do_deploy(archive_path):
     """Deploy an archive to the web servers"""
+    if not os.path.exists(archive_path):
+        return False
+    file_name
     try:
         try:
             if os.path.exists(archive_path):
