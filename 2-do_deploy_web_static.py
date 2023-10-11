@@ -1,55 +1,62 @@
 #!/usr/bin/python3
-"""Fabric script (based on the file 1-pack_web_static.py) that distributes
-an archive to your web servers, using the function do_deploy
-"""
+'''
+Fabric script that distributes an archive to web servers
+'''
 
-from fabric.api import env,put, run, runs_once, local
-from datetime import datetime
 import os
-
+from datetime import datetime
+from fabric.api import env, put, run, runs_once, local
 
 env.hosts = ['100.25.170.22', '35.174.185.161']
 
 
+def do_deploy():
+    """Static files archives"""
+    if not os.path.isdir("versions"):
+        os.mkdir("versions")
+    time = datetime.now()
+    res = "versions/web_static_{}{}{}{}{}{}.tgz".format(
+        time.year,
+        time.month,
+        time.day,
+        time.hour,
+        time.minute,
+        time.second
+    )
+    try:
+        print("Packing web_static to {}".format(res))
+        local("tar -cvzf {} web_static".format(res))
+        archize_size = os.stat(res).st_size
+        print("web_static packed: {} -> {} Bytes".format(res, archize_size))
+    except Exception:
+        res = None
+    return res
+
+
 def do_deploy(archive_path):
-    """Deploy an archive to the web servers"""
+    """Deploys the static files to the host servers
+
+    Args:
+        archive_path (str): The path of the archive to distribute
+    """
+
     if not os.path.exists(archive_path):
         return False
-    file_name
+    file_name = os.path.basename(archive_path)
+    folder_name = file_name.replace(".tgz", "")
+    folder_path = "/data/web_static/releases/{}/".format(folder_name)
+    success = False
     try:
-        try:
-            if os.path.exists(archive_path):
-                # Extract archive to the /data/web_static/releases/
-                arc_tgz = archive_path.split("/")
-                arg_save = arc_tgz[1]
-                arc_tgz = arc_tgz[1].split(".")
-                arc_tgz = arc_tgz[0]
-
-                # Upload archive to the server
-                put(archive_path, "/tmp")
-
-                # save folder paths in variables
-                uncomp_fold = "/data/web_static/releases/{}".format(arc_tgz)
-                tmp_location = "/tmp/{}".format(arg_save)
-
-                # Run remote commands on the server
-                run("mkdir -p {}".format(uncomp_fold))
-                run("tar -xzf /tmp/{} -C {}".format(tmp_location, uncomp_fold))
-
-                # Delete the archive from the web server
-                run("mv {}/web_static/* {}".format(uncomp_fold, uncomp_fold))
-                run("rm -rf {}/web_static".format(uncomp_fold))
-                run("rm -rf /data/web_static/current")
-                run("ln -sf {} /data/web_static/current".format(uncomp_fold))
-                run("sudo service nginx restart")
-                return True
-            else:
-                print("File does not exist")
-                return False
-        except Exception as err:
-            print(err)
-            return False
-
+        put(archive_path, "/tmp/{}".format(file_name))
+        run("mkdir -p {}".format(folder_path))
+        run("tar -xzf /tmp/{} -C {}".format(file_name, folder_path))
+        run("rm -rf /tmp/{}".format(file_name))
+        run("mv {}web_static/* {}".format(folder_path, folder_path))
+        run("rm -rf {}web_static".format(folder_path))
+        run("rm -rf /data/web_static/current")
+        run("ln -s {} /data/web_static/current".format(folder_path))
+        print('New version deployed!')
+        success = True
     except Exception:
-        print("error")
-        return False
+        success = False
+    return success
