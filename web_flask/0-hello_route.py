@@ -2,14 +2,14 @@
 """
 Script that starts a Flask web application
 Listens to 0.0.0.0, port 5000
-Route '/' displays Hello HBNB!
+Route '/airbnb-onepage/' displays Hello HBNB!
 """
 from flask import Flask
 
 app = Flask(__name__)
 
 
-@app.route('/', strict_slashes=False)
+@app.route('/airbnb-onepage/', strict_slashes=False)
 def hello_flask():
     """Return string when route queried
     """
